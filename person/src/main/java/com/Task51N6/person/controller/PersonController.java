@@ -1,6 +1,6 @@
 package com.Task51N6.person.controller;
 
-import com.Task51N6.person.model.Location;
+
 import com.Task51N6.person.model.Person;
 import com.Task51N6.person.model.Weather;
 import com.Task51N6.person.repository.PersonRepository;
@@ -39,11 +39,18 @@ public class PersonController {
                 : new ResponseEntity(personRepository.save(person), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}/temperature")
-    public Optional<Integer> getTemperature(@PathVariable int id) {
-        String tempLocation = personRepository.findById(id).get().getLocation();
-        Location location = restTemplate.getForObject("http://localhost:8082/location/locationName/" + tempLocation, Location.class);
-        Weather weather = restTemplate.getForObject("http://localhost:8083/weather/" + location.getLat() + "/" +location.getLon(), Weather.class);
-        return Optional.ofNullable(weather.getTemperature());
+    @GetMapping("/{id}/weather")
+    public Optional<Weather> getTemperature(@PathVariable int id) {
+
+        Optional<Person> tempPerson = personRepository.findById(id);
+        Optional<Weather> weather = Optional.empty();
+
+        if (tempPerson.isPresent()) {
+            weather = Optional.ofNullable(
+                    restTemplate.getForObject("http://localhost:8083/location/weather?name=" +
+                            tempPerson.get().getLocation(), Weather.class));
+        }
+
+        return weather;
     }
 }

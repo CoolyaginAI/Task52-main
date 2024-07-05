@@ -1,4 +1,4 @@
-package com.Task51N6.person.model;
+package com.Task51N6.location.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

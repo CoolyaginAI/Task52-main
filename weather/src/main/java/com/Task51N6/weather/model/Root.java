@@ -23,4 +23,9 @@ public class Root{
     private int id;
     private String name;
     private int cod;
+
+    public Main getMain() {
+        return main;
+    }
+
 }
