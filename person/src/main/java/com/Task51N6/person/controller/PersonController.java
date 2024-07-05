@@ -40,17 +40,15 @@ public class PersonController {
     }
 
     @GetMapping("/{id}/weather")
-    public Optional<Weather> getTemperature(@PathVariable int id) {
-
-        Optional<Person> tempPerson = personRepository.findById(id);
-        Optional<Weather> weather = Optional.empty();
-
-        if (tempPerson.isPresent()) {
-            weather = Optional.ofNullable(
-                    restTemplate.getForObject("http://localhost:8083/location/weather?name=" +
-                            tempPerson.get().getLocation(), Weather.class));
+    public ResponseEntity<Weather> getWeather(@PathVariable int id) {
+        if (personRepository.existsById(id)) {
+            String location = personRepository.findById(id).get().getLocation();
+            Weather weather = restTemplate.getForObject(
+                    "http://localhost:8083/location/weather?name=" + location, Weather.class);
+            return new ResponseEntity(weather, HttpStatus.OK);
         }
-
-        return weather;
+        return new ResponseEntity(null, HttpStatus.NOT_FOUND);
     }
+
+
 }
